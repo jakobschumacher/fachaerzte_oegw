@@ -1,0 +1,80 @@
+---
+title: "GBE_Fachaerzte"
+author: "Jakob Schumacher"
+date: "11 Mai 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+suppressPackageStartupMessages(library(tidyverse))
+library(stringi)
+library(data.table)
+```
+
+## Getting the data
+
+GBE-Bund.de
+http://www.gbe-bund.de/oowa921-install/servlet/oowa/aw92/WS0100/_XWD_FORMPROC?TARGET=&PAGE=_XWD_320&OPINDEX=1&HANDLER=XS_ROTATE_ADVANCED&DATACUBE=_XWD_348&D.000=ACROSS&D.001=DOWN&D.002=DOWN&D.003=DOWN&D.395=DOWN&D.928=DOWN&D.100=PAGE 
+
+Bei den Ärztekammern registrierte Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung (absolut, je 100.000 Einwohner und Einwohner je Arzt). Gliederungsmerkmale: Jahre, Region, Alter, Geschlecht, Gebiets-/Facharztbezeichnung, Tätigkeitsbereich
+
+Merkmale
+<!-- Zeile: Region, Alter, Geschlecht, Facharzbezeichnung, Tätigkeitsbereich -->
+Spalte: Jahr
+Blatt: Darstellung
+
+```{r cars}
+# file <- readLines("IND656_1.csv")
+# 
+# file[which(file=="")]
+# 
+# file[13]
+
+
+# data <- read.csv(file = "IND656_1.csv", sep = ";",  fileEncoding = "ISO-8859-1", na.strings = c(""," ","NA"), colClasses = c("character", rep("NULL", 60)))
+# fread(file = "IND656_1.csv", sep = ";", fill = TRUE, select = 1)
+# head(data$X)
+
+
+
+data <- read.csv(file = "IND656_1.csv", sep = ";",  fileEncoding = "ISO-8859-1", skip = 15, na.strings = c(""," ","NA", "\\"))
+
+# Remove the footnotes
+data <- data[1:which(grepl("\\*", data[,1]))[1] - 1,]
+
+data <- data %>% 
+  rename(Altersgruppe = X, Gebiet = X.1) %>% 
+  rename_at(vars(starts_with("X.")), funs(str_replace(., "X.", ""))) %>% 
+  mutate(Altersgruppe = str_trim(Altersgruppe)) %>% 
+  fill(Altersgruppe, .direction = "down") %>% 
+  mutate_all(function(x) (gsub(pattern = "\\.", replacement =  "", x))) %>% 
+  gather(key = "key", value = "value", -Gebiet, -Altersgruppe) %>% 
+  filter(value != "") %>% 
+  mutate(value = as.numeric(value), key = as.factor(key)) %>% 
+  filter(Altersgruppe != "Alle Altersgruppen") %>% 
+  filter(Gebiet != " Gebiets-/Facharztbezeichnungen insgesamt (incl ohne Gebiet)")
+  
+
+
+
+data2 <- data %>% 
+  rename_all()
+
+head(data)
+
+data$Jahr_1991[1]
+
+
+readLines("IND656_1.csv", n = 30)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

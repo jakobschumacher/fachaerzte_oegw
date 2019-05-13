@@ -1,0 +1,41 @@
+---
+title: "GBE_Fachaerzte"
+author: "Jakob Schumacher"
+date: "11 Mai 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Getting the data
+
+GBE-Bund.de
+http://www.gbe-bund.de/oowa921-install/servlet/oowa/aw92/WS0100/_XWD_FORMPROC?TARGET=&PAGE=_XWD_320&OPINDEX=1&HANDLER=XS_ROTATE_ADVANCED&DATACUBE=_XWD_348&D.000=ACROSS&D.001=DOWN&D.002=DOWN&D.003=DOWN&D.395=DOWN&D.928=DOWN&D.100=PAGE 
+
+Bei den Ärztekammern registrierte Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung (absolut, je 100.000 Einwohner und Einwohner je Arzt). Gliederungsmerkmale: Jahre, Region, Alter, Geschlecht, Gebiets-/Facharztbezeichnung, Tätigkeitsbereich
+
+Merkmale
+Zeile: Region, Alter, Geschlecht, Facharzbezeichnung, Tätigkeitsbereich
+Spalte: Jahr
+Blatt: Darstellung
+
+```{r cars}
+data <- read.csv(file = "IND656_1.csv", sep = ";",  fileEncoding = "ISO-8859-1", skip = 15)
+
+# Cut away the footnotes
+data <- data[1:(which(grepl("\\*", data[,1]))[1] - 1),]
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
