@@ -2,6 +2,10 @@
     "path" : "~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte",
     "sortOrder" : [
         {
+            "ascending" : false,
+            "columnIndex" : 4
+        },
+        {
             "ascending" : true,
             "columnIndex" : 2
         }

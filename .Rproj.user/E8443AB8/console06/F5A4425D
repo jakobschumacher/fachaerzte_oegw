@@ -54,3 +54,29 @@ Initialized empty Git repository in /home/jakob/Dokumente/03_Projekte/Statistik 
  create mode 100644 IND656_1.csv
  create mode 100644 gbe_fachaerzte.Rmd
 ]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ [K]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[000m$ git add .
+]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerztte[00m$ git commt -m[K[K[K[K[Ken[K[Kmen[K[K[Kmit -m "Zweite Working version"
+[master 9b1ef40] Zweite Working version
+ 27 files changed, 14342 insertions(+), 88 deletions(-)
+ rewrite .Rproj.user/E8443AB8/console06/INDEX001 (77%)
+ create mode 100644 .Rproj.user/E8443AB8/sources/prop/1D54E9B5
+ create mode 100644 .Rproj.user/E8443AB8/sources/prop/47304B73
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/20C62B5A-contents
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/3B9AF0C-contents
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/A792F027
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/A792F027-contents
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/EB9002B-contents
+ rename .Rproj.user/E8443AB8/sources/s-1DD258DB/{31D6D2DF => EC9AB840} (58%)
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/EC9AB840-contents
+ create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/F3FF0856-contents
+ delete mode 100644 .~lock.IND656_1.csv#
+ create mode 100644 .~lock.IND656_3.csv#
+ create mode 100644 IND656_2.csv
+ create mode 100644 IND656_3.csv
+ create mode 100644 IND656_Gebiet_Region.csv
+ create mode 100644 IND656_Geschlecht_Gebiet_Jahr.csv
+ create mode 100644 "IND656_T\303\244tigkeitsbereich_Gebiet_Jahr.csv"
+ create mode 100644 Taetigkeit_Fachbereich_Jahr.csv
+ create mode 100644 gbe_fachaerzte.html
+]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[K 
+3_Projekte/Statisti[Kkk und Software/2019__05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ [K[A[A[A[A]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[0
+stik und Software/2019_05_111_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ 
