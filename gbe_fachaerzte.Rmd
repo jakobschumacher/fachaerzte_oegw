@@ -17,6 +17,36 @@ suppressPackageStartupMessages(library(plotly))
 suppressPackageStartupMessages(library(gridExtra))
 suppressPackageStartupMessages(library(knitr))
 setwd(here::here())
+
+
+# This function reads in gbe-files
+read_gbe_files <- function(file, variables) {
+  # Preread thte data to find parameters vor read_csv2
+  testread = readLines(file, encoding = "UTF-8")
+  beginning <- grep(pattern = "2018", x = testread) - 1
+  end <- grep(pattern = "\\*\\*\\*", x = testread)[2] - beginning - 3
+  
+  # Actually read the file with parameters
+  data <- suppressMessages(
+          suppressWarnings(
+              read_csv2(file = file, 
+                    skip = beginning,
+                    n_max = end,
+                    locale = readr::locale(encoding = "ISO-8859-1"))
+          ))
+  
+  data <- data %>% 
+    # Erase last blank column
+    select(-matches("X\\d\\d")) %>%  
+    # Fille the variables 
+    fill(contains("X"), .direction = "down") 
+  
+  names(data) <- c(variables, names(data)[(1 + length(grep("X\\d", names(data)))):length(names(data))])
+  
+  data
+} 
+
+
 ```
 
 ## Datenquelle
@@ -43,15 +73,10 @@ Die dazugehörigen Zahlen noch in Tabellenform darstellen
 # Linien dicker und schwarz
 
 ```{r, Fig1}
-data <- read_csv2(file = "190721_Tatigkeit_Facharzt_Jahr.csv", 
-                  skip = 15,
-                  n_max = 333,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
-  
+data <- read_gbe_files(file = "190721_Tatigkeit_Facharzt_Jahr.csv", variables = c("Taetigkeit", "Facharzt"))
+
+
 data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Taetigkeit = X1, Facharzt = X2) %>% 
   mutate(Facharzt = ifelse(Facharzt == "Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)", "Gesamt", Facharzt)) %>% 
   filter(Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Gesamt" |
           Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Öffentliches Gesundheitswesen" | 
@@ -106,15 +131,9 @@ kable(data %>%
 
 # Abbildung 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung Öffentliches Gesundheitswesen nach Region seit 1998 bis 2018 in Deutschland
 ```{r, fig2}
-data <- read_csv2(file = "190721_Region_Jahr.csv", 
-                  skip = 16,
-                  n_max = 16,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
+data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
 
 data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Region = X1) %>%
   gather(key = "Jahr", value = "n", -Region) %>% 
   mutate(Region = ifelse(Region == "Berlin, bis 1990 nur Berlin-West", "Berlin", Region)) %>% 
   mutate(Jahr = paste0(Jahr, "-01-01")) %>% 
@@ -137,15 +156,7 @@ g1
 
 # Tabelle 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung ÖGW je 100.000 Einwohner nach Region
 ```{r}
-data <- read_csv2(file = "190721_Region_Jahr.csv", 
-                  skip = 16,
-                  n_max = 16,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
-
-data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Region = X1) 
+data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
 
 kable(data)
 ```
@@ -156,15 +167,9 @@ kable(data)
 
 ## Select lowest and highest 3
 ```{r}
-data <- read_csv2(file = "190721_Gebiete_Jahr.csv", 
-                  skip = 16,
-                  n_max = 37,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
   
 data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Facharzt = X1) %>% 
   gather(key = "Jahr", value = "n", -Facharzt) %>% 
   mutate(Facharzt = ifelse(Facharzt == "Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)", "Gesamt", Facharzt)) %>% 
    mutate(Jahr = paste0(Jahr, "-01-01")) %>% 
@@ -192,15 +197,10 @@ kable(data)
 
 
 ```{r}
-data <- read_csv2(file = "190721_Gebiete_Jahr.csv", 
-                  skip = 16,
-                  n_max = 37,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
-  
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+
+
 data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Facharzt = X1) %>% 
   gather(key = "Jahr", value = "n", -Facharzt) %>% 
   mutate(Facharzt = ifelse(Facharzt == "Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)", "Gesamt", Facharzt)) %>% 
    mutate(Jahr = paste0(Jahr, "-01-01")) %>% 
@@ -246,17 +246,41 @@ grid.arrange(g1,
 
 ```
 
-### Tabelle 3: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+### Tabelle 3a: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
 ```{r}
-data <- read_csv2(file = "190721_Gebiete_Jahr.csv", 
-                  skip = 16,
-                  n_max = 37,
-                  locale = readr::locale(encoding = "ISO-8859-1"))
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
   
 data <- data %>% 
-  select(-matches("X\\d\\d")) %>% 
-  fill(contains("X"), .direction = "down") %>% 
-  dplyr::rename(Facharzt = X1) %>% 
+  gather(key = "Jahr", value = "n", -Facharzt) %>% 
+  mutate(Facharzt = ifelse(Facharzt == "Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)", "Gesamt", Facharzt)) %>% 
+   mutate(Jahr = paste0(Jahr, "-01-01")) %>% 
+  mutate(Jahr = as.Date(Jahr, origin = "1970-01-01")) %>% 
+  filter(Jahr >= as.Date("1998-01-01", origin = "1970-01-01")) %>% 
+  mutate_at(vars(-n, -Jahr), factor) 
+
+data <- data %>% 
+ arrange(Facharzt, Jahr) %>% 
+  group_by(Facharzt) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
+  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
+  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
+  mutate(value = paste0(n, " (", cum_perc_change, " %)") ) %>% 
+  select(Facharzt, Jahreszahl, value) %>% 
+  spread(key = Jahreszahl, value = value)
+
+kable(data)
+```
+
+
+### Tabelle 3b: Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+```{r}
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+  
+data <- data %>% 
   gather(key = "Jahr", value = "n", -Facharzt) %>% 
   mutate(Facharzt = ifelse(Facharzt == "Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)", "Gesamt", Facharzt)) %>% 
    mutate(Jahr = paste0(Jahr, "-01-01")) %>% 
@@ -287,6 +311,8 @@ data <- read_csv2(file = "190721_Alter_Geschlecht_NurOEGW.csv",
                   skip = 15,
                   n_max = 21,
                   locale = readr::locale(encoding = "ISO-8859-1"))
+
+
 
 data <- data %>% 
   select(-matches("X\\d\\d")) %>% 
