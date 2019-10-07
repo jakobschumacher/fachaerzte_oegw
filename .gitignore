@@ -1,8 +1,0 @@
-*.Rproj
-.Rhistory
-.RData
-.Ruserdata
-data/*
-.~lock*
-.gitignore
-.Rproj.user
