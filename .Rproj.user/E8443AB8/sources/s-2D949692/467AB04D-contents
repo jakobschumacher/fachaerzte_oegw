@@ -1,0 +1,401 @@
+---
+title: 'Entwurf: Fachärzte für den öffentlichen Gesundheitsdienst werden weiblicher
+  und - entgegen dem allgemeinen Trend der Facharztbereiche - weniger'
+author: "Jakob Schumacher"
+date: "11 Mai 2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(fig.width = 9, fig.height = 9, echo = FALSE, warning = FALSE, message = FALSE)
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggthemes))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(gridExtra))
+suppressPackageStartupMessages(library(knitr))
+setwd(here::here())
+```
+
+
+
+```{r function, echo=FALSE}
+# This function reads in gbe-files
+read_gbe_files <- function(file, variables) {
+
+   # file = "190721_Geschlecht_Alter.csv"
+   # variables = c("Geschlecht", "Alter")
+
+  file = paste0("data/", file)
+  
+  # Preread thte data to find parameters vor read_csv2
+  testread = readLines(file, encoding = "UTF-8")
+  beginning <- grep(pattern = "2018", x = testread) - 1
+  end <- grep(pattern = "\\*\\*\\*", x = testread)[2] - beginning - 3
+  
+  # Actually read the file with parameters
+  data <- suppressMessages(
+          suppressWarnings(
+              read_csv2(file = file, 
+                    skip = beginning,
+                    n_max = end,
+                    locale = readr::locale(encoding = "ISO-8859-1"))
+          ))
+  
+  data <- data %>% 
+    # Erase last blank column
+    select(-matches("X\\d\\d")) %>%  
+    # Fill the variables 
+    fill(contains("X"), .direction = "down") 
+    
+    
+  names(data) <- c(variables, names(data)[(1 + length(grep("X\\d", names(data)))):length(names(data))])
+    
+
+  data <- data %>%
+    # transfer to long format (critical step)
+    gather(key = "Jahr", value = "n", -variables)
+
+  
+  data <- data %>%
+    mutate_all(list(~str_replace(., "Berlin, bis 1990 nur Berlin-West", "Berlin"))) %>%
+    mutate_all(list(~str_replace(., fixed("Gebiets-/Facharztbezeichnungen insgesamt (incl. ohne Gebiet)"), "Gesamt"))) %>% 
+    mutate_all(list(~str_replace(., fixed("Unter 35 Jahre"), "34 Jahre und jünger")))
+
+  data <- data %>% 
+    mutate_at(vars(-n, -Jahr), factor) %>% 
+    mutate(Jahr = paste0(Jahr, "-12-31")) %>% 
+    mutate(Jahr = as.Date(Jahr, origin = "1970-01-01")) %>% 
+    mutate(n = as.numeric(n)) 
+  
+  
+  data
+} 
+
+
+```
+
+## Datenquelle
+
+Die Daten stammen von den Ärztekammern. Sie werden bereitgestellt auf www.gbe-bund.de unter dem Tabellennamen: "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK" 
+
+Beschreibung der Methodik der Statistik der Mitglieder der (Landes-) Ärztekammern (Ärztestatistik) von gbe-bund.de
+
+_In den Heilberufsgesetzen der Bundesländer ist festgelegt, dass alle Ärzte, die in einem bestimmten Bundesland tätig sind oder, falls sie ihren Beruf nicht ausüben, ihren gewöhnlichen Aufenthalt haben, Mitglied der jeweiligen (Landes-) Ärztekammer sein müssen.
+
+Die Kammern haben über ihre Mitglieder ein Verzeichnis zu führen, in das bestimmte Angaben einzutragen sind.
+
+Auf der Basis dieser Mitgliederverzeichnisse erstellen die (Landes-) Ärztekammern zum 31. Dezember jeden Jahres Auswertungen zu ausgewählten Aspekten der Berufspolitik, die sie an die Bundesärztekammer weiterleiten.
+
+Die Bundesärztekammer (BÄK), Arbeitsgemeinschaft der deutschen Ärztekammern, ist die Berufsvertretung aller deutschen Ärzte auf Bundesebene.
+
+Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und erstellt somit die Ärztestatistik._
+
+
+
+Die dazugehörigen Zahlen noch in Tabellenform darstellen
+
+# Abbildung 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland seit 1998 bis 2018 nach Ärztlicher Tätigkeit
+```{r, Fig1}
+data <- read_gbe_files(file = "190721_Tatigkeit_Facharzt_Jahr.csv", variables = c("Taetigkeit", "Facharzt"))
+
+
+data <- data %>% 
+  filter(Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Gesamt" |
+          Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Öffentliches Gesundheitswesen" | 
+           Taetigkeit == "In Behörden/Körperschaften u. a." & Facharzt == "Gesamt" ) %>% 
+  mutate(aerztliche_taetigkeit = ifelse(Taetigkeit == "In Behörden/Körperschaften u. a.", as.character(Taetigkeit), as.character(Facharzt))) %>% 
+  select(-Facharzt, -Taetigkeit) %>% 
+  filter(TRUE) %>% 
+  as.data.frame
+
+data <- data %>% 
+  arrange(aerztliche_taetigkeit, Jahr) %>% 
+  group_by(aerztliche_taetigkeit) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) 
+
+ggplot(data, aes(Jahr, cum_perc_change, group = aerztliche_taetigkeit)) +
+  geom_line(aes(linetype = aerztliche_taetigkeit), size = 1.5) +
+  theme_bw() +
+  ylab("Kummulierte prozentuale Änderung") +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0),
+        legend.position = "bottom") +
+  # scale_colour_brewer(palette = "Blues") +
+  labs(linetype = "Ärztliche Tätigkeit", color = "Ärztliche Tätigkeit") 
+```
+
+
+
+# Tabelle 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland von 1998 bis 2017
+```{r, Tab1, results='asis'}
+kable(data %>% 
+  mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
+  filter(Jahr == "Jahr2018" | Jahr == "Jahr1998") %>% 
+  mutate(cum_perc_change = round(cum_perc_change)) %>% 
+  select(Jahr, aerztliche_taetigkeit, n) %>% 
+  spread(Jahr, n) %>% 
+  mutate(Proz = round(100 * Jahr2018 / Jahr1998) - 100) %>% 
+  select("Ärztliche Tätigkeit" = aerztliche_taetigkeit, "2018" = Jahr2018, "1998" = Jahr1998, "Prozentuale Veränderung" = Proz)
+)
+
+```
+
+
+# Abbildung 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung Öffentliches Gesundheitswesen nach Region seit 1998 bis 2018 in Deutschland
+```{r, fig2}
+data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
+
+g1 <- ggplot(as.data.frame(data) , aes(x = Jahr, 
+                                 y = n, 
+                                 group = 1)) +  
+  geom_line(size = 1.1) +
+  facet_wrap(. ~ Region) +
+  theme_bw() +
+  ylab("Tätige Fachärzte ÖGW") +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) 
+
+
+g1
+```
+
+# Tabelle 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung ÖGW nach Region
+```{r}
+data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
+
+kable(data)
+```
+
+
+
+# Abbildung 3: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2017
+
+## Select lowest and highest 3
+```{r}
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+
+
+data <- data %>% 
+ arrange(Facharzt, Jahr) %>% 
+  group_by(Facharzt) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
+  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
+  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
+  filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
+  arrange(cum_perc_change)
+
+kable(data)
+```
+
+
+
+
+
+```{r}
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+
+g1 <- ggplot(as.data.frame(data %>% 
+                      filter(Facharzt %in% c(
+                            "Innere Medizin",
+                            "Allgemeinmedizin",
+                            "Chirurgie"
+                           )) ) , aes(x = Jahr, 
+                                 y = n, 
+                                 group = 1)) +  
+  geom_line(size = 1.2) +
+  facet_wrap(. ~ Facharzt) +
+  theme_bw() +
+  ylab("") +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
+  scale_y_continuous(limits = c(0,50000)) 
+  
+
+
+g2 <- ggplot(as.data.frame(data %>% 
+                      filter(Facharzt %in% c("Öffentliches Gesundheitswesen",
+                            "Hygiene und Umweltmedizin",
+                            "Pharmakologie"
+                           )) ) , aes(x = Jahr, 
+                                 y = n, 
+                                 group = 1)) +  
+  geom_line(size = 1.2) +
+  facet_wrap(. ~ Facharzt) +
+  theme_bw() +
+  ylab(" ") +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
+  scale_y_continuous(limits = c(0,1500))
+
+
+grid.arrange(g1,
+             g2, 
+             left = "Anzahl fachärztlich Tätige/r")
+
+```
+
+### Tabelle 3a: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+```{r, Tabelle 3a}
+data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+  
+data <- data %>% 
+ arrange(Facharzt, Jahr) %>% 
+  group_by(Facharzt) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
+  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
+  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
+  mutate(value = paste0(n, " (", cum_perc_change, " %)") ) %>% 
+  select(Facharzt, Jahreszahl, value) %>% 
+  spread(key = Jahreszahl, value = value)
+
+kable(data)
+```
+
+
+### Tabelle 3b: Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+```{r, Tabelle 3b}
+data <- read_gbe_files(file = "191007_Facharzt_Jahr_NurOEGW.csv", variables = c("Facharzt"))
+  
+data <- data %>% 
+ arrange(Facharzt, Jahr) %>% 
+  group_by(Facharzt) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
+  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
+  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
+  mutate(value = paste0(n, " (", cum_perc_change, " %)") ) %>% 
+  select(Facharzt, Jahreszahl, value) %>% 
+  #distinct() %>% 
+  #rowid_to_column() %>% 
+  spread(key = Jahreszahl, value = value) 
+  
+
+kable(data)
+```
+
+# Abbildung 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung Öffentliches Gesundheitswesen nach Alter in Deutschland von 1998 bis 2018
+```{r, Abbildung 4}
+data <- read_gbe_files(file = "190721_Alter_Geschlecht_NurOEGW.csv", variables = c("Geschlecht", "Alter"))
+  
+data <- data %>% 
+  filter(Geschlecht != "Beide Geschlechter") %>% 
+  filter(Alter != "Alle Altersgruppen") %>%
+  group_by(Jahr) %>% 
+  mutate(count = sum(n, na.rm = TRUE)) %>% 
+  mutate(percent = (n * 100) / count)
+
+ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
+  geom_col(position = position_stack(reverse = TRUE)) +
+  theme_bw() +
+  ylab("Prozentsatz der Altersgruppe von der \n Gesamtanzahl der Fachärzte ÖGW") +
+  #scale_y_discrete(expand = c(0,0)) +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
+  scale_fill_brewer(palette = "Blues")
+
+```
+
+
+# Tabelle 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW nach Alter in Deutschland von 1998 bis 2018
+```{r, Tabelle 4}
+kable(data %>% select(Jahr, Alter, Geschlecht, Anzahl = n, Prozent = percent))
+        
+```
+
+# Abbildung 5: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW und alle Fachärzte nach Geschlecht und Alter (Alterspyramide) in Deutschland von 1998 bis 2018
+```{r, Abbildung 5}
+data <- read_gbe_files(file = "190721_Geschlecht_Alter.csv", variables = c("Geschlecht", "Alter", "Facharzt"))
+
+
+data <- data %>% 
+  filter(Geschlecht %in% c("Weiblich", "Männlich")) %>% 
+  filter(Alter != "Alle Altersgruppen") %>% 
+  filter(TRUE) %>% 
+  as.data.frame
+
+data_gesamt <- data %>% 
+  group_by(Geschlecht, Alter, Jahr) %>% 
+  summarise(n = sum(n, na.rm = T))
+
+g1 <- ggplot(data_gesamt %>% 
+                filter(Jahr == as.Date("1998-12-31", origin = "1970-01-01")) %>% 
+               group_by(Alter, Geschlecht) %>% 
+               tally(wt = n) %>% 
+               mutate(Anzahl = ifelse(Geschlecht == "Männlich", n, -n)), aes(x = Alter, y = Anzahl , fill = Geschlecht)) + 
+  geom_bar(stat = "identity") + 
+  scale_y_continuous(limits = c(-60000, 60000)) +
+  coord_flip() + 
+  theme_bw() +
+  xlab("Alter aller tätigen Fachärzte/innen") +
+  ggtitle("1998") +
+  theme(legend.position = "none") +
+  scale_x_discrete(position = "right") +
+  scale_fill_brewer(palette = "Blues")
+
+g2 <- ggplot(data_gesamt %>% 
+                filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
+               group_by(Alter, Geschlecht) %>% 
+               tally(wt = n) %>% 
+               mutate(Anzahl = ifelse(Geschlecht == "Männlich", n, -n))
+             , aes(x = Alter, y = Anzahl , fill = Geschlecht)) + 
+  geom_bar(stat = "identity") + 
+  scale_y_continuous(limits = c(-60000, 60000)) +
+  coord_flip() + 
+  theme_bw() +
+  xlab("") +
+  ggtitle("2018") +
+  theme(legend.position = "none") +
+  scale_x_discrete(position = "left") +
+  scale_fill_brewer(palette = "Blues")
+
+
+g3 <- ggplot(data %>% 
+               filter(Facharzt == "Öffentliches Gesundheitswesen") %>% 
+                filter(Jahr == as.Date("1998-12-31", origin = "1970-01-01")) %>% 
+               group_by(Alter, Geschlecht) %>% 
+               tally(wt = n) %>% 
+               mutate(Anzahl = ifelse(Geschlecht == "Männlich", n, -n)), aes(x = Alter, y = Anzahl , fill = Geschlecht)) + 
+  geom_bar(stat = "identity") + 
+  scale_y_continuous(limits = c(-320, 320)) +
+  coord_flip() + 
+  theme_bw() +
+  xlab("Alter Fachärzte ÖGW") +
+  ggtitle("1998") +
+  theme(legend.position = "none") +
+  scale_x_discrete(position = "right") +
+  scale_fill_brewer(palette = "Blues")
+
+g4 <- ggplot(data %>% 
+               filter(Facharzt == "Öffentliches Gesundheitswesen") %>% 
+                filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
+               group_by(Alter, Geschlecht) %>% 
+               tally(wt = n) %>% 
+               mutate(Anzahl = ifelse(Geschlecht == "Männlich", n, -n))
+             , aes(x = Alter, y = Anzahl , fill = Geschlecht)) + 
+  geom_bar(stat = "identity") + 
+  scale_y_continuous(limits = c(-320, 320)) +
+  coord_flip() + 
+  theme_bw() +
+  xlab("") +
+  ggtitle("2018") +
+  theme(legend.position = "none") +
+  scale_x_discrete(position = "left") +
+  scale_fill_brewer(palette = "Blues")
+
+
+grid.arrange(g1, g2, g3, g4)
+```
+
