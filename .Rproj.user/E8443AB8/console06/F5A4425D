@@ -1,82 +1,0 @@
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$  file -I IND656_1.csv
-file: invalid option -- 'I'
-Usage: file [-bcEhikLlNnprsvzZ0] [--apple] [--extension] [--mime-encoding] [--mime-type]
-            [-e testname] [-F separator] [-f namefile] [-m magicfiles] file ...
-       file -C [-m magicfiles]
-       file [--help]
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$  file -I IND656_1.csv[1P IND656_1.csv[C[C[C[C[C[C[1P IND656_1.csv[C[C[C[C[C
-IND656_1.csv: ISO-8859 text, with very long lines
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$  ^C
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$  file  IND656_1.csv
-IND656_1.csv: ISO-8859 text, with very long lines
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ git status
-fatal: not a git repository (or any of the parent directories): .git
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ git init
-Initialized empty Git repository in /home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte/.git/
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ git s[Kadd .
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ git commit -m "Working with first tab[K[K[Kcsv"
-[master (root-commit) f5a269d] Working with first csv
- 36 files changed, 8473 insertions(+)
- create mode 100644 .Rproj.user/E8443AB8/console06/F5A4425D
- create mode 100644 .Rproj.user/E8443AB8/console06/F5A4425D.env
- create mode 100644 .Rproj.user/E8443AB8/console06/INDEX001
- create mode 100644 .Rproj.user/E8443AB8/pcs/files-pane.pper
- create mode 100644 .Rproj.user/E8443AB8/pcs/source-pane.pper
- create mode 100644 .Rproj.user/E8443AB8/pcs/windowlayoutstate.pper
- create mode 100644 .Rproj.user/E8443AB8/pcs/workbench-pane.pper
- create mode 100644 .Rproj.user/E8443AB8/persistent-state
- create mode 100644 .Rproj.user/E8443AB8/rmd-outputs
- create mode 100644 .Rproj.user/E8443AB8/saved_source_markers
- create mode 100644 .Rproj.user/E8443AB8/sources/prop/629CBD00
- create mode 100644 .Rproj.user/E8443AB8/sources/prop/67807AA
- create mode 100644 .Rproj.user/E8443AB8/sources/prop/INDEX
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/31D6D2DF
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/31D6D2DF-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/50113802-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/B84CD185
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/B84CD185-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/lock_file
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/1C5138B7
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/1C5138B7-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/2A472051-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/713335E4-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/7CF49E42
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/7CF49E42-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-AA08A5E0/lock_file
- create mode 100644 .Rproj.user/shared/notebooks/B23FF02-gbe_fachaerzte/1/E8443AB81DD258DB/chunks.json
- create mode 100644 .Rproj.user/shared/notebooks/B23FF02-gbe_fachaerzte/1/E8443AB8AA08A5E0/chunks.json
- create mode 100644 .Rproj.user/shared/notebooks/B23FF02-gbe_fachaerzte/1/s/chunks.json
- create mode 100644 .Rproj.user/shared/notebooks/patch-chunk-names
- create mode 100644 .Rproj.user/shared/notebooks/paths
- create mode 100644 .~lock.IND656_1.csv#
- create mode 100644 2019_05_11_GBE_Fachaerzte.Rproj
- create mode 100644 IND656.csv
- create mode 100644 IND656_1.csv
- create mode 100644 gbe_fachaerzte.Rmd
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ [K]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[000m$ git add .
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerztte[00m$ git commt -m[K[K[K[K[Ken[K[Kmen[K[K[Kmit -m "Zweite Working version"
-[master 9b1ef40] Zweite Working version
- 27 files changed, 14342 insertions(+), 88 deletions(-)
- rewrite .Rproj.user/E8443AB8/console06/INDEX001 (77%)
- create mode 100644 .Rproj.user/E8443AB8/sources/prop/1D54E9B5
- create mode 100644 .Rproj.user/E8443AB8/sources/prop/47304B73
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/20C62B5A-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/3B9AF0C-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/A792F027
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/A792F027-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/EB9002B-contents
- rename .Rproj.user/E8443AB8/sources/s-1DD258DB/{31D6D2DF => EC9AB840} (58%)
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/EC9AB840-contents
- create mode 100644 .Rproj.user/E8443AB8/sources/s-1DD258DB/F3FF0856-contents
- delete mode 100644 .~lock.IND656_1.csv#
- create mode 100644 .~lock.IND656_3.csv#
- create mode 100644 IND656_2.csv
- create mode 100644 IND656_3.csv
- create mode 100644 IND656_Gebiet_Region.csv
- create mode 100644 IND656_Geschlecht_Gebiet_Jahr.csv
- create mode 100644 "IND656_T\303\244tigkeitsbereich_Gebiet_Jahr.csv"
- create mode 100644 Taetigkeit_Fachbereich_Jahr.csv
- create mode 100644 gbe_fachaerzte.html
-]0;/home/jakob/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[K 
-3_Projekte/Statisti[Kkk und Software/2019__05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ [K[A[A[A[A]0;jakob@quartierlatin: ~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[0
-stik und Software/2019_05_111_GBE_Fachaerzte[01;32mjakob@quartierlatin[00m:[01;34m~/Dokumente/03_Projekte/Statistik und Software/2019_05_11_GBE_Fachaerzte[00m$ 
