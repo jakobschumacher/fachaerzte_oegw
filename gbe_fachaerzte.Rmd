@@ -1,7 +1,6 @@
 ---
-title: 'Entwurf: Fachärzte für den öffentlichen Gesundheitsdienst werden weiblicher
-  und - entgegen dem allgemeinen Trend der Facharztbereiche - weniger'
-author: "Jakob Schumacher"
+title: 'Entwurf: Quantifizierung und regionale Trends des Facharztmangels im Öffentlichen Gesundheitsdienst (ÖGD)'
+author: "Peter Tinnemann, Jakob Schumacher, Elke Bruns-Philipps, Ute Teichert"
 date: "11 Mai 2019"
 output:
   html_document: default
@@ -68,7 +67,8 @@ read_gbe_files <- function(file, variables) {
     mutate_at(vars(-n, -Jahr), factor) %>% 
     mutate(Jahr = paste0(Jahr, "-12-31")) %>% 
     mutate(Jahr = as.Date(Jahr, origin = "1970-01-01")) %>% 
-    mutate(n = as.numeric(n)) 
+    mutate(n = as.numeric(n)) %>% 
+    mutate(n = ifelse(is.na(n), 0, n))
   
   
   data
@@ -98,7 +98,7 @@ Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und ers
 Die dazugehörigen Zahlen noch in Tabellenform darstellen
 
 # Abbildung 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland seit 1998 bis 2018 nach Ärztlicher Tätigkeit
-```{r, Fig1}
+```{r, Abbildung 1}
 data <- read_gbe_files(file = "190721_Tatigkeit_Facharzt_Jahr.csv", variables = c("Taetigkeit", "Facharzt"))
 
 
@@ -133,7 +133,7 @@ ggplot(data, aes(Jahr, cum_perc_change, group = aerztliche_taetigkeit)) +
 
 
 # Tabelle 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland von 1998 bis 2017
-```{r, Tab1, results='asis'}
+```{r, Tabelle 1, results='asis'}
 kable(data %>% 
   mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
   filter(Jahr == "Jahr2018" | Jahr == "Jahr1998") %>% 
@@ -165,7 +165,7 @@ g1
 ```
 
 # Tabelle 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung ÖGW nach Region
-```{r}
+```{r, Tabelle 2, results='asis'}
 data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
 
 kable(data)
@@ -174,8 +174,6 @@ kable(data)
 
 
 # Abbildung 3: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2017
-
-## Select lowest and highest 3
 ```{r}
 data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
 
@@ -195,9 +193,6 @@ data <- data %>%
 
 kable(data)
 ```
-
-
-
 
 
 ```{r}
@@ -309,9 +304,22 @@ ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
 ```
 
 
-# Tabelle 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW nach Alter in Deutschland von 1998 bis 2018
+# Tabelle 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW nach Alter in Deutschland von 1998 bis 2018 für beide Geschlechter
 ```{r, Tabelle 4}
-kable(data %>% select(Jahr, Alter, Geschlecht, Anzahl = n, Prozent = percent))
+
+data <- read_gbe_files(file = "190721_Alter_Geschlecht_NurOEGW.csv", variables = c("Geschlecht", "Alter"))
+  
+data <- data %>% 
+  filter(Geschlecht == "Beide Geschlechter") %>% 
+  filter(Alter != "Alle Altersgruppen") %>% 
+  mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
+  filter(Jahr == "Jahr1998" | Jahr == "Jahr2018" ) %>% 
+  group_by(Jahr) %>% 
+  mutate(count = sum(n, na.rm = TRUE)) %>% 
+  mutate(percent = round((n * 100) / count, 1)) 
+         
+
+kable(data %>% select(Jahr, Alter, Anzahl = n, Prozent = percent))
         
 ```
 
@@ -397,5 +405,56 @@ g4 <- ggplot(data %>%
 
 
 grid.arrange(g1, g2, g3, g4)
+```
+
+
+# Alter der tätigen Fachärzte nach Facharzt im Jahr 1998 und Jahr 2018
+```{r}
+data <- read_gbe_files(file = "191009_Geschlecht_Alter_Facharzt_NurTaetige.csv", variables = c("Geschlecht", "Alter", "Facharzt")) %>% 
+  filter(Alter != "Alle Altersgruppen") %>% 
+  filter(Geschlecht != "Beide Geschlechter") 
+
+
+df_facharzt <- data %>% 
+  mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
+  filter(Jahr == "Jahr1998" | Jahr == "Jahr2018" ) %>% 
+  mutate(Alter = as.character(Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "34 Jahre und jünger", "32.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "35 bis unter 40 Jahre", "37.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "40 bis unter 50 Jahre", "44.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "50 bis unter 60 Jahre", "54.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "60 bis unter 66 Jahre", "62.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "66 Jahre und älter", "67.5", Alter)) %>% 
+  mutate(Alter = as.numeric(Alter)) %>% 
+  mutate(gesammeltesAlter = n*Alter) %>% 
+  group_by(Facharzt, Jahr) %>% 
+  summarise(MittleresAlter = round(sum(gesammeltesAlter)/sum(n),1)) %>% 
+  spread(key="Jahr", value = "MittleresAlter") %>% 
+  mutate(Differenz = Jahr2018-Jahr1998) %>% 
+  ungroup() %>% 
+  mutate(Facharzt = as.character(Facharzt))
+
+
+df_all <- data %>% 
+  mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
+  filter(Jahr == "Jahr1998" | Jahr == "Jahr2018" ) %>% 
+  mutate(Alter = as.character(Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "34 Jahre und jünger", "32.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "35 bis unter 40 Jahre", "37.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "40 bis unter 50 Jahre", "44.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "50 bis unter 60 Jahre", "54.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "60 bis unter 66 Jahre", "62.5", Alter)) %>% 
+  mutate(Alter = ifelse(Alter == "66 Jahre und älter", "67.5", Alter)) %>% 
+  mutate(Alter = as.numeric(Alter)) %>% 
+  mutate(gesammeltesAlter = n*Alter) %>% 
+  group_by(Jahr) %>% 
+  summarise(MittleresAlter = round(sum(gesammeltesAlter)/sum(n),1)) %>% 
+  spread(key = "Jahr", value = "MittleresAlter") %>% 
+  mutate(Differenz = Jahr2018 - Jahr1998) %>% 
+  mutate(Facharzt = "Alle Fachärzte") %>% 
+  select(Facharzt, Jahr1998, Jahr2018, Differenz)
+
+kable(rbind(df_all, df_facharzt))
+
 ```
 
