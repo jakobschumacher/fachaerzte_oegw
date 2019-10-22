@@ -24,9 +24,6 @@ setwd(here::here())
 # This function reads in gbe-files
 read_gbe_files <- function(file, variables) {
 
-   # file = "190721_Geschlecht_Alter.csv"
-   # variables = c("Geschlecht", "Alter")
-
   file = paste0("data/", file)
   
   # Preread thte data to find parameters vor read_csv2
@@ -82,34 +79,40 @@ read_gbe_files <- function(file, variables) {
 Die Daten stammen von den Ärztekammern. Sie werden bereitgestellt auf www.gbe-bund.de unter dem Tabellennamen: "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK" 
 
 Beschreibung der Methodik der Statistik der Mitglieder der (Landes-) Ärztekammern (Ärztestatistik) von gbe-bund.de
+  * _In den Heilberufsgesetzen der Bundesländer ist festgelegt, dass alle Ärzte, die in einem bestimmten Bundesland tätig sind oder, falls sie ihren Beruf nicht ausüben, ihren gewöhnlichen Aufenthalt haben, Mitglied der jeweiligen (Landes-) Ärztekammer sein müssen. Die Kammern haben über ihre Mitglieder ein Verzeichnis zu führen, in das bestimmte Angaben einzutragen sind. Auf der Basis dieser Mitgliederverzeichnisse erstellen die (Landes-) Ärztekammern zum 31. Dezember jeden Jahres Auswertungen zu ausgewählten Aspekten der Berufspolitik, die sie an die Bundesärztekammer weiterleiten. Die Bundesärztekammer (BÄK), Arbeitsgemeinschaft der deutschen Ärztekammern, ist die Berufsvertretung aller deutschen Ärzte auf Bundesebene. Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und erstellt somit die Ärztestatistik._
 
-_In den Heilberufsgesetzen der Bundesländer ist festgelegt, dass alle Ärzte, die in einem bestimmten Bundesland tätig sind oder, falls sie ihren Beruf nicht ausüben, ihren gewöhnlichen Aufenthalt haben, Mitglied der jeweiligen (Landes-) Ärztekammer sein müssen.
-
-Die Kammern haben über ihre Mitglieder ein Verzeichnis zu führen, in das bestimmte Angaben einzutragen sind.
-
-Auf der Basis dieser Mitgliederverzeichnisse erstellen die (Landes-) Ärztekammern zum 31. Dezember jeden Jahres Auswertungen zu ausgewählten Aspekten der Berufspolitik, die sie an die Bundesärztekammer weiterleiten.
-
-Die Bundesärztekammer (BÄK), Arbeitsgemeinschaft der deutschen Ärztekammern, ist die Berufsvertretung aller deutschen Ärzte auf Bundesebene.
-
-Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und erstellt somit die Ärztestatistik._
+Beschreibung der Auswahl
+  1. Auswahl der Tabelle "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK"  auf GBE-Bund.de
+  2. Einschränkung auf der Seite "Werteauswahl" auf die Jahre 1998 bis 2018
+  3. Wenn "alle Facharztrichtungen" beschrieben sind wurde auf der Seite "Werteauswahl" die folgenden ausgewählt: Allgemeinmedizin, Anästhesiologie, Anatomie, Arbeitsmedizin, Augenheilkunde, Biochemie, Chirurgie, Frauenheilkunde und Geburtshilfe, Hals-Nasen-Ohrenheilkunde, Haut- und Geschlechtskrankheiten, Humangenetik, Hygiene und Umweltmedizin, Innere Medizin, Kinder- und Jugendmedizin, Kinder- und Jugendpsychiatrie und -psychotherapie, Laboratoriumsmedizin, Mikrobiologie Virologie Infektionsepidemiologie, Mund-Kiefer-Gesichtschirurgie, Neurochirurgie, Neurologie, Nuklearmedizin, Öffentliches Gesundheitswesen, Pathologie, Pharmakologie, Physikalische und Rehabilitative Medizin, Physiologie, Psychiatrie und Psychotherapie, Psychosomatische Medizin und Psychotherapie, Radiologie, Rechtsmedizin, Strahlentherapie, Transfusionsmedizin, Urologie
+  4. Wenn "Fachärzte im öffentlichen Gesundheitswesen" beschrieben ist wurde nur auf der Seite "Werteauswahl" ausgewählt: Öffentliches Gesundheitswesen
+  2. Wenn "tätigen" Fachärzten beschrieben sind, wurde unter "Diese Tabelle bezieht sich auf folgende Blattmerkmale" und "Tätigkeitsbereiche" die Auswahl "mit ärztlicher Tätigkeit" getroffen 
 
 
-
-Die dazugehörigen Zahlen noch in Tabellenform darstellen
-
-# Abbildung 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland seit 1998 bis 2018 nach Ärztlicher Tätigkeit
+# Abbildung 1: Kummulierte prozentuale Änderung der Anzahl an tätigen Fachärzt/innen von 1998 bis 2018 nach Ärztlicher Tätigkeit unterschieden zwischen Gesamtheit aller Facharztrichtungen, in Behöroden/Körperschaften o.ä. und Öffentliches Gesundheitswesen
 ```{r, Abbildung 1}
-data <- read_gbe_files(file = "190721_Tatigkeit_Facharzt_Jahr.csv", variables = c("Taetigkeit", "Facharzt"))
+data <- read_gbe_files(file = "191022_Tatigkeit_Facharzt.csv", variables = c("Taetigkeit", "Facharzt"))
 
+gesamttaetige <- data %>% 
+  filter(Taetigkeit == "Mit ärztlicher Tätigkeit") %>% 
+  group_by(Jahr) %>% 
+  summarise(n = sum(n)) %>% 
+  mutate(aerztliche_taetigkeit = "Gesamt")
+  
+behoerdlichetaetige <- data %>% 
+  filter(Taetigkeit == "In Behörden/Körperschaften u. a.") %>% 
+  group_by(Jahr) %>% 
+  summarise(n = sum(n)) %>% 
+  mutate(aerztliche_taetigkeit = "In Behörden/Körperschaften u. a.")
 
-data <- data %>% 
-  filter(Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Gesamt" |
-          Taetigkeit == "Mit ärztlicher Tätigkeit" & Facharzt == "Öffentliches Gesundheitswesen" | 
-           Taetigkeit == "In Behörden/Körperschaften u. a." & Facharzt == "Gesamt" ) %>% 
-  mutate(aerztliche_taetigkeit = ifelse(Taetigkeit == "In Behörden/Körperschaften u. a.", as.character(Taetigkeit), as.character(Facharzt))) %>% 
-  select(-Facharzt, -Taetigkeit) %>% 
-  filter(TRUE) %>% 
-  as.data.frame
+oegwtaetige <- data %>% 
+  filter(Taetigkeit == "Mit ärztlicher Tätigkeit") %>% 
+  filter(Facharzt == "Öffentliches Gesundheitswesen") %>% 
+  group_by(Jahr) %>% 
+  summarise(n = sum(n)) %>% 
+  mutate(aerztliche_taetigkeit = "Öffentliches Gesundheitswesen")
+
+data <- rbind(oegwtaetige, behoerdlichetaetige, gesamttaetige)
 
 data <- data %>% 
   arrange(aerztliche_taetigkeit, Jahr) %>% 
@@ -131,8 +134,7 @@ ggplot(data, aes(Jahr, cum_perc_change, group = aerztliche_taetigkeit)) +
 ```
 
 
-
-# Tabelle 1: Kummulierte prozentuale Änderung der Anzahl an tätigen bei der Ärztekammer registrierten Ärztinnen und Ärzten pro Einwohner in Deutschland von 1998 bis 2017
+# Tabelle 1: Kummulierte prozentuale Änderung der Anzahl an tätigen Fachärzt/innen von 1998 bis 2018 nach Ärztlicher Tätigkeit unterschieden zwischen Gesamtheit aller Facharztrichtungen, in Behöroden/Körperschaften o.ä. und Öffentliches Gesundheitswesen
 ```{r, Tabelle 1, results='asis'}
 kable(data %>% 
   mutate(Jahr = paste0("Jahr", strftime(Jahr, format = "%Y"))) %>% 
@@ -147,56 +149,33 @@ kable(data %>%
 ```
 
 
-# Abbildung 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung Öffentliches Gesundheitswesen nach Region seit 1998 bis 2018 in Deutschland
+# Abbildung 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung Öffentliches Gesundheitswesen nach Region von 1998 bis 2018 in Deutschland
 ```{r, fig2}
-data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
+data <- read_gbe_files(file = "191022_Region_nurOEGW.csv", variables = c("Region"))
 
 g1 <- ggplot(as.data.frame(data) , aes(x = Jahr, 
-                                 y = n, 
-                                 group = 1)) +  
+                                       y = n, 
+                                       group = 1)) +  
   geom_line(size = 1.1) +
-  facet_wrap(. ~ Region) +
+  facet_wrap(. ~ Region, scales = "free") +
   theme_bw() +
   ylab("Tätige Fachärzte ÖGW") +
   theme(axis.text.x  = element_text(angle = 90, vjust = 0)) 
 
-
 g1
 ```
 
-# Tabelle 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung ÖGW nach Region
+# Tabelle 2: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte mit Facharztbezeichnung Öffentliches Gesundheitswesen nach Region von 1998 bis 2018 in Deutschland
 ```{r, Tabelle 2, results='asis'}
-data <- read_gbe_files(file = "190721_Region_Jahr.csv", variables = c("Region"))
+data <- read_gbe_files(file = "191022_Region_nurOEGW.csv", variables = c("Region"))
 
-kable(data)
+kable(data %>% spread(key = "Jahr", value = "n") %>% arrange(desc(`2005-12-31`)))
 ```
-
 
 
 # Abbildung 3: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2017
 ```{r}
-data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
-
-
-data <- data %>% 
- arrange(Facharzt, Jahr) %>% 
-  group_by(Facharzt) %>% 
-  mutate(change = n - lag(n)) %>% 
-  mutate(change = replace_na(change, 0)) %>% 
-  mutate(cum_change = cumsum(change)) %>%  
-  mutate(origin = n - cum_change) %>% 
-  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
-  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
-  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
-  filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
-  arrange(cum_perc_change)
-
-kable(data)
-```
-
-
-```{r}
-data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+data <- read_gbe_files(file = "191022_Facharzt_nurTaetige.csv", variables = c("Facharzt"))
 
 g1 <- ggplot(as.data.frame(data %>% 
                       filter(Facharzt %in% c(
@@ -236,9 +215,33 @@ grid.arrange(g1,
 
 ```
 
-### Tabelle 3a: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+# Tabelle 3: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2017
+```{r}
+data <- read_gbe_files(file = "191022_Facharzt_nurTaetige.csv", variables = c("Facharzt"))
+
+data <- data %>% 
+ arrange(Facharzt, Jahr) %>% 
+  group_by(Facharzt) %>% 
+  mutate(change = n - lag(n)) %>% 
+  mutate(change = replace_na(change, 0)) %>% 
+  mutate(cum_change = cumsum(change)) %>%  
+  mutate(origin = n - cum_change) %>% 
+  mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
+  mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
+  mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
+  filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
+  arrange(cum_perc_change) %>% 
+  select(Facharzt, 'Anzahl im Jahr 1998' = origin, 'Anzahl im Jahr 2018' = n, 'Kumulierte prozentuale Änderung' = cum_perc_change)
+
+kable(data)
+```
+
+
+
+
+### Tabelle 3a: Bei den Ärztekammern registrierte tätigen Ärztinnen und Ärzte nach Facharztrichtungen in Deutschland zwischen 1998 und 2018
 ```{r, Tabelle 3a}
-data <- read_gbe_files(file = "190721_Gebiete_Jahr.csv", variables = c("Facharzt"))
+data <- read_gbe_files(file = "191022_Facharzt_nurTaetige.csv", variables = c("Facharzt"))
   
 data <- data %>% 
  arrange(Facharzt, Jahr) %>% 
@@ -258,9 +261,9 @@ kable(data)
 ```
 
 
-### Tabelle 3b: Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte für ausgewählte Facharztrichtungen in Deutschland zwischen 1998 und 2018
+### Tabelle 3b: Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte nach Facharztrichtungen in Deutschland zwischen 1998 und 2018
 ```{r, Tabelle 3b}
-data <- read_gbe_files(file = "191007_Facharzt_Jahr_NurOEGW.csv", variables = c("Facharzt"))
+data <- read_gbe_files(file = "191022_Facharzt_NurBehoerde.csv", variables = c("Facharzt"))
   
 data <- data %>% 
  arrange(Facharzt, Jahr) %>% 
@@ -284,7 +287,7 @@ kable(data)
 
 # Abbildung 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung Öffentliches Gesundheitswesen nach Alter in Deutschland von 1998 bis 2018
 ```{r, Abbildung 4}
-data <- read_gbe_files(file = "190721_Alter_Geschlecht_NurOEGW.csv", variables = c("Geschlecht", "Alter"))
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_nurOEGW_nurTaetige.csv", variables = c("Geschlecht", "Alter"))
   
 data <- data %>% 
   filter(Geschlecht != "Beide Geschlechter") %>% 
@@ -307,7 +310,7 @@ ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
 # Tabelle 4: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW nach Alter in Deutschland von 1998 bis 2018 für beide Geschlechter
 ```{r, Tabelle 4}
 
-data <- read_gbe_files(file = "190721_Alter_Geschlecht_NurOEGW.csv", variables = c("Geschlecht", "Alter"))
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_nurOEGW_nurTaetige.csv", variables = c("Geschlecht", "Alter"))
   
 data <- data %>% 
   filter(Geschlecht == "Beide Geschlechter") %>% 
@@ -316,16 +319,19 @@ data <- data %>%
   filter(Jahr == "Jahr1998" | Jahr == "Jahr2018" ) %>% 
   group_by(Jahr) %>% 
   mutate(count = sum(n, na.rm = TRUE)) %>% 
-  mutate(percent = round((n * 100) / count, 1)) 
-         
+  mutate(percent = round((n * 100) / count, 1)) %>% 
+  mutate('Anzahl (%)' = paste0(n, " (", percent, "%)")) %>% 
+  select(Jahr, Alter, 'Anzahl (%)') %>% 
+  spread(key = "Jahr", value = 'Anzahl (%)') %>% 
+  select(Alter, 'Anzahl (%) in 1998' = Jahr1998, 'Anzahl (%) in 2018' = Jahr2018)
 
-kable(data %>% select(Jahr, Alter, Anzahl = n, Prozent = percent))
+kable(data)
         
 ```
 
 # Abbildung 5: Bei den Ärztekammern registrierte tätige Ärztinnen und Ärzte mit der Facharztbezeichnung ÖGW und alle Fachärzte nach Geschlecht und Alter (Alterspyramide) in Deutschland von 1998 bis 2018
 ```{r, Abbildung 5}
-data <- read_gbe_files(file = "190721_Geschlecht_Alter.csv", variables = c("Geschlecht", "Alter", "Facharzt"))
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_Facharzt_nurTaetige.csv", variables = c("Geschlecht", "Alter", "Facharzt"))
 
 
 data <- data %>% 
@@ -410,7 +416,7 @@ grid.arrange(g1, g2, g3, g4)
 
 # Alter der tätigen Fachärzte nach Facharzt im Jahr 1998 und Jahr 2018
 ```{r}
-data <- read_gbe_files(file = "191009_Geschlecht_Alter_Facharzt_NurTaetige.csv", variables = c("Geschlecht", "Alter", "Facharzt")) %>% 
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_Facharzt_nurTaetige.csv", variables = c("Geschlecht", "Alter", "Facharzt")) %>% 
   filter(Alter != "Alle Altersgruppen") %>% 
   filter(Geschlecht != "Beide Geschlechter") 
 
@@ -452,7 +458,8 @@ df_all <- data %>%
   spread(key = "Jahr", value = "MittleresAlter") %>% 
   mutate(Differenz = Jahr2018 - Jahr1998) %>% 
   mutate(Facharzt = "Alle Fachärzte") %>% 
-  select(Facharzt, Jahr1998, Jahr2018, Differenz)
+  select(Facharzt, Jahr1998, Jahr2018, Differenz) %>% 
+  arrange(Jahr2018)
 
 kable(rbind(df_all, df_facharzt))
 
