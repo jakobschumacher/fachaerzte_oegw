@@ -2,6 +2,11 @@
 title: 'Entwurf: Quantifizierung und regionale Trends des Facharztmangels im Öffentlichen Gesundheitsdienst (ÖGD)'
 author: "Peter Tinnemann, Jakob Schumacher, Elke Bruns-Philipps, Ute Teichert"
 date: "30 Oktober 2019"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 output:
   html_document: default
   pdf_document: default
