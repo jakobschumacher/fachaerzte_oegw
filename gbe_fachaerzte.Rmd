@@ -36,7 +36,7 @@ setwd(here::here())
 ```{r function, echo=FALSE}
 # This function reads in gbe-files
 read_gbe_files <- function(file, variables) {
-
+  
   file = paste0("data/", file)
   
   # Preread thte data to find parameters vor read_csv2
@@ -86,17 +86,20 @@ read_gbe_files <- function(file, variables) {
 
 # Datenquelle
 
-Die Daten stammen von den Ärztekammern. Sie werden bereitgestellt auf www.gbe-bund.de unter dem Tabellennamen: "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK" 
+Die Daten stammen von den Ärztekammern. Sie werden bereitgestellt auf [http://www.gbe-bund.de](http://www.gbe-bund.de) unter dem Tabellennamen: ["Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK"](http://www.gbe-bund.de/gbe10/express.prc_expr?p_aid=30416728&p_uid=gast&p_sprachkz=D&p_var=0&nummer=656&p_indsp=&p_ityp=H&p_hlpnr=3&p_lfd_nr=1&p_sprache=D&p_news=&p_janein=J) 
 
 Beschreibung der Methodik der Statistik der Mitglieder der (Landes-) Ärztekammern (Ärztestatistik) von gbe-bund.de
-  * _In den Heilberufsgesetzen der Bundesländer ist festgelegt, dass alle Ärzte, die in einem bestimmten Bundesland tätig sind oder, falls sie ihren Beruf nicht ausüben, ihren gewöhnlichen Aufenthalt haben, Mitglied der jeweiligen (Landes-) Ärztekammer sein müssen. Die Kammern haben über ihre Mitglieder ein Verzeichnis zu führen, in das bestimmte Angaben einzutragen sind. Auf der Basis dieser Mitgliederverzeichnisse erstellen die (Landes-) Ärztekammern zum 31. Dezember jeden Jahres Auswertungen zu ausgewählten Aspekten der Berufspolitik, die sie an die Bundesärztekammer weiterleiten. Die Bundesärztekammer (BÄK), Arbeitsgemeinschaft der deutschen Ärztekammern, ist die Berufsvertretung aller deutschen Ärzte auf Bundesebene. Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und erstellt somit die Ärztestatistik._
+
+* _In den Heilberufsgesetzen der Bundesländer ist festgelegt, dass alle Ärzte, die in einem bestimmten Bundesland tätig sind oder, falls sie ihren Beruf nicht ausüben, ihren gewöhnlichen Aufenthalt haben, Mitglied der jeweiligen (Landes-) Ärztekammer sein müssen. Die Kammern haben über ihre Mitglieder ein Verzeichnis zu führen, in das bestimmte Angaben einzutragen sind. Auf der Basis dieser Mitgliederverzeichnisse erstellen die (Landes-) Ärztekammern zum 31. Dezember jeden Jahres Auswertungen zu ausgewählten Aspekten der Berufspolitik, die sie an die Bundesärztekammer weiterleiten. Die Bundesärztekammer (BÄK), Arbeitsgemeinschaft der deutschen Ärztekammern, ist die Berufsvertretung aller deutschen Ärzte auf Bundesebene. Die Bundesärztekammer fasst diese Meldungen zum Bundesergebnis zusammen und erstellt somit die Ärztestatistik._
 
 Beschreibung der Auswahl
-  1. Auswahl der Tabelle "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK"  auf GBE-Bund.de
-  2. Einschränkung auf der Seite "Werteauswahl" auf die Jahre 1998 bis 2018
-  3. Wenn "alle Facharztrichtungen" beschrieben sind wurde auf der Seite "Werteauswahl" die folgenden ausgewählt: Allgemeinmedizin, Anästhesiologie, Anatomie, Arbeitsmedizin, Augenheilkunde, Biochemie, Chirurgie, Frauenheilkunde und Geburtshilfe, Hals-Nasen-Ohrenheilkunde, Haut- und Geschlechtskrankheiten, Humangenetik, Hygiene und Umweltmedizin, Innere Medizin, Kinder- und Jugendmedizin, Kinder- und Jugendpsychiatrie und -psychotherapie, Laboratoriumsmedizin, Mikrobiologie Virologie Infektionsepidemiologie, Mund-Kiefer-Gesichtschirurgie, Neurochirurgie, Neurologie, Nuklearmedizin, Öffentliches Gesundheitswesen, Pathologie, Pharmakologie, Physikalische und Rehabilitative Medizin, Physiologie, Psychiatrie und Psychotherapie, Psychosomatische Medizin und Psychotherapie, Radiologie, Rechtsmedizin, Strahlentherapie, Transfusionsmedizin, Urologie
-  4. Wenn "Fachärzte im öffentlichen Gesundheitswesen" beschrieben ist wurde nur auf der Seite "Werteauswahl" ausgewählt: Öffentliches Gesundheitswesen
-  2. Wenn "tätigen" Fachärzten beschrieben sind, wurde unter "Diese Tabelle bezieht sich auf folgende Blattmerkmale" und "Tätigkeitsbereiche" die Auswahl "mit ärztlicher Tätigkeit" getroffen 
+
+1. Auswahl der Tabelle "Ärztinnen und Ärzte mit Gebiets- und Facharztbezeichnung, BÄK"  auf GBE-Bund.de
+2. Einschränkung auf der Seite "Werteauswahl" auf die Jahre 1998 bis 2018
+3. Einschränkung auf der Seite "Werteauswahl" unter "Tätigkeitsbereiche" auf "mit ärztlicher Tätigkeit"
+4. Einschränkung der Facharztrichtungen
+    1. Wenn "alle Facharztrichtungen" beschrieben sind wurde auf der Seite "Werteauswahl" die folgenden ausgewählt: Allgemeinmedizin, Anästhesiologie, Anatomie, Arbeitsmedizin, Augenheilkunde, Biochemie, Chirurgie, Frauenheilkunde und Geburtshilfe, Hals-Nasen-Ohrenheilkunde, Haut- und Geschlechtskrankheiten, Humangenetik, Hygiene und Umweltmedizin, Innere Medizin, Kinder- und Jugendmedizin, Kinder- und Jugendpsychiatrie und -psychotherapie, Laboratoriumsmedizin, Mikrobiologie Virologie Infektionsepidemiologie, Mund-Kiefer-Gesichtschirurgie, Neurochirurgie, Neurologie, Nuklearmedizin, Öffentliches Gesundheitswesen, Pathologie, Pharmakologie, Physikalische und Rehabilitative Medizin, Physiologie, Psychiatrie und Psychotherapie, Psychosomatische Medizin und Psychotherapie, Radiologie, Rechtsmedizin, Strahlentherapie, Transfusionsmedizin, Urologie
+    2. Wenn "Fachärzte im öffentlichen Gesundheitswesen" beschrieben ist wurde nur auf der Seite "Werteauswahl" ausgewählt: Öffentliches Gesundheitswesen
 
 
 # Änderung Gesamtanzahl {.tabset}
@@ -190,14 +193,25 @@ Bei den Ärztekammern registrierte tätigen Fachärt/innen für Öffentliches Ge
 
 ## Abbildung
 ```{r, fig2}
-data <- read_gbe_files(file = "191022_Region_nurOEGW.csv", variables = c("Region"))
+data <- read_gbe_files(file = "191022_Region_nurOEGW.csv", variables = c("Region")) %>% 
+  filter(Region != "Deutschland") 
+
+# Ordering
+RegionOrder <- data %>% spread(key = "Jahr", value = "n") %>% 
+  mutate(percentageLoss = ((`2018-12-31` * 100) / `1998-12-31`) - 100) %>% 
+  select(Region, `1998-12-31`, `2018-12-31`, percentageLoss) %>% 
+  arrange(percentageLoss) %>% 
+  pull(Region) %>% 
+  droplevels()
+  
+data$Region <- factor(data$Region, levels = RegionOrder)
 
 g1 <- ggplot(as.data.frame(data) , aes(x = Jahr, 
                                        y = n, 
                                        group = 1)) +  
   geom_line(size = 1.1) +
   facet_wrap(. ~ Region, scales = "free") +
-  theme_bw() +
+  theme_bw(base_size = 14) +
   ylab("Tätige Fachärzte ÖGW") +
   theme(axis.text.x  = element_text(angle = 90, vjust = 0)) 
 
@@ -205,12 +219,29 @@ g1
 ```
 
 ## Tabelle 
-
 ```{r, Tabelle 2, results='asis'}
 data <- read_gbe_files(file = "191022_Region_nurOEGW.csv", variables = c("Region"))
 
-kable(data %>% spread(key = "Jahr", value = "n") %>% arrange(desc(`2005-12-31`)))
+kable(data %>% spread(key = "Jahr", value = "n")  %>% 
+        mutate(percentageLoss = round(((`2018-12-31` * 100)/ `1998-12-31`) - 100,1)) %>% 
+        select(Region, `1998-12-31`, `2008-12-31`, `2018-12-31`, percentageLoss) %>% 
+        arrange(percentageLoss) %>% 
+        rename(`Verlust in Prozent` = percentageLoss) )
 ```
+
+
+## Tabelle Anzahl pro 100.000
+```{r, Tabelle 2, results='asis'}
+data <- read_gbe_files(file = "200228_Region_nurOEGW_pro100000.csv", variables = c("Region"))
+
+kable(data %>% spread(key = "Jahr", value = "n")  %>% 
+        mutate(percentageLoss = round(((`2018-12-31` * 100)/ `1998-12-31`) - 100,1)) %>% 
+        select(Region, `1998-12-31`, `2008-12-31`, `2018-12-31`, percentageLoss) %>% 
+        arrange(percentageLoss) %>% 
+        rename(`Verlust in Prozent` = percentageLoss) )
+```
+
+
 
 
 # Nach Facharztrichtungen {.tabset}
@@ -230,7 +261,7 @@ g1 <- ggplot(as.data.frame(data %>%
                                  group = 1)) +  
   geom_line(size = 1.2) +
   facet_wrap(. ~ Facharzt) +
-  theme_bw() +
+  theme_bw(base_size = 14) +
   ylab("") +
   theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
   scale_y_continuous(limits = c(0,50000)) 
@@ -246,7 +277,7 @@ g2 <- ggplot(as.data.frame(data %>%
                                  group = 1)) +  
   geom_line(size = 1.2) +
   facet_wrap(. ~ Facharzt) +
-  theme_bw() +
+  theme_bw(base_size = 14) +
   ylab(" ") +
   theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
   scale_y_continuous(limits = c(0,1500))
@@ -254,7 +285,7 @@ g2 <- ggplot(as.data.frame(data %>%
 
 grid.arrange(g1,
              g2, 
-             left = "Anzahl fachärztlich Tätige/r")
+             left = "Anzahl Fachärzt/innen")
 
 ```
 
@@ -296,17 +327,22 @@ data <- data %>%
   mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
   mutate(value = paste0(n, " (", cum_perc_change, " %)") ) %>% 
   select(Facharzt, Jahreszahl, value) %>% 
-  spread(key = Jahreszahl, value = value)
+  spread(key = Jahreszahl, value = value) %>% 
+  rename(`1998-12-31` = `1998`, `2008-12-31` = `2008`, `2018-12-31` = `2018`) %>% 
+  select(Facharzt, `1998-12-31`, `2008-12-31`, `2018-12-31`)
 
 kable(data)
 ```
 
 
-# ÖGD-Ärzte
-## Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte nach Facharztrichtungen in Deutschland zwischen 1998 und 2018
+# Fachärzt/innen in Behörden, Körperschaften o.ä. {.tabset}
+Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte nach Facharztrichtungen in Deutschland zwischen 1998 und 2018
+
+## Tabelle
 ```{r, Tabelle 3b}
 data <- read_gbe_files(file = "191022_Facharzt_NurBehoerde.csv", variables = c("Facharzt"))
   
+
 data <- data %>% 
  arrange(Facharzt, Jahr) %>% 
   group_by(Facharzt) %>% 
@@ -317,11 +353,9 @@ data <- data %>%
   mutate(cum_perc_change = (100 * (n - origin)) / origin) %>% 
   mutate(cum_perc_change = round(cum_perc_change, 1)) %>% 
   mutate(Jahreszahl = strftime(Jahr, format = "%Y")) %>% 
-  mutate(value = paste0(n, " (", cum_perc_change, " %)") ) %>% 
-  select(Facharzt, Jahreszahl, value) %>% 
-  #distinct() %>% 
-  #rowid_to_column() %>% 
-  spread(key = Jahreszahl, value = value) 
+  filter(Jahr == as.Date("2018-12-31", origin = "1970-01-01")) %>% 
+  arrange(cum_perc_change) %>% 
+  select(Facharzt, 'Anzahl im Jahr 1998' = origin, 'Anzahl im Jahr 2018' = n, 'Kumulierte prozentuale Änderung' = cum_perc_change)
   
 
 kable(data)
@@ -350,6 +384,33 @@ ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
   scale_fill_brewer(palette = "Blues")
 
 ```
+
+## Tabelle 1998
+```{r}
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_nurOEGW_nurTaetige.csv", variables = c("Geschlecht", "Alter"))
+
+kable(
+data %>% 
+  filter(Jahr == "1998-12-31", Geschlecht == "Beide Geschlechter", Alter != "Alle Altersgruppen") %>% 
+  select(Alter, n) %>%
+  mutate(Prozent = round(n * 100 / (data %>% filter(Jahr == "1998-12-31", Geschlecht == "Beide Geschlechter", Alter == "Alle Altersgruppen") %>% pull(n)),1) )  %>% 
+  rename(Anzahl = n)
+)
+```
+
+## Tabelle 2018
+```{r}
+data <- read_gbe_files(file = "191022_Geschlecht_Alter_nurOEGW_nurTaetige.csv", variables = c("Geschlecht", "Alter"))
+
+kable(
+data %>% 
+  filter(Jahr == "2018-12-31", Geschlecht == "Beide Geschlechter", Alter != "Alle Altersgruppen") %>% 
+  select(Alter, n) %>%
+  mutate(Prozent = round(n * 100 / (data %>% filter(Jahr == "2018-12-31", Geschlecht == "Beide Geschlechter", Alter == "Alle Altersgruppen") %>% pull(n)),1) ) %>% 
+  rename(Anzahl = n)
+)
+```
+
 
 
 # Nach Geschlecht
