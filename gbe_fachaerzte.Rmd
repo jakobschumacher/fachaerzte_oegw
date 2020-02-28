@@ -36,7 +36,7 @@ setwd(here::here())
 ```{r function, echo=FALSE}
 # This function reads in gbe-files
 read_gbe_files <- function(file, variables) {
-  
+
   file = paste0("data/", file)
   
   # Preread thte data to find parameters vor read_csv2
@@ -56,6 +56,8 @@ read_gbe_files <- function(file, variables) {
   data <- data %>% 
     # Erase last blank column
     select(-matches("X\\d\\d")) %>%  
+    # Delete columns that contain only NA
+    select_if(~mean(is.na(.)) != 1) %>% 
     # Fill the variables 
     fill(contains("X"), .direction = "down") 
     
@@ -188,7 +190,7 @@ tdata <- data %>%
 
 
 
-# Änderung ÖGW-Ärzte nach Region {.tabset}
+# Nach Region {.tabset}
 Bei den Ärztekammern registrierte tätigen Fachärt/innen für Öffentliches Gesundheitswesen nach Region von 1998 bis 2018 in Deutschland
 
 ## Abbildung
@@ -231,17 +233,33 @@ kable(data %>% spread(key = "Jahr", value = "n")  %>%
 
 
 ## Tabelle Anzahl pro 100.000
-```{r, Tabelle 2, results='asis'}
-data <- read_gbe_files(file = "200228_Region_nurOEGW_pro100000.csv", variables = c("Region"))
+```{r, Tabelle pro100000, results='asis'}
+data <- read_gbe_files(file = "200228_Region_nurOEGW_pro100000.csv", variables = c("Region", "Facharzt"))
 
-kable(data %>% spread(key = "Jahr", value = "n")  %>% 
-        mutate(percentageLoss = round(((`2018-12-31` * 100)/ `1998-12-31`) - 100,1)) %>% 
-        select(Region, `1998-12-31`, `2008-12-31`, `2018-12-31`, percentageLoss) %>% 
-        arrange(percentageLoss) %>% 
-        rename(`Verlust in Prozent` = percentageLoss) )
+
+
+kable(data %>% 
+        filter(Jahr == "2018-12-31") %>% 
+        select(Region, n) %>%
+        rename("Anzahl pro 100.000 (2018)" = n) 
+)
 ```
 
 
+```{r}
+# suppressPackageStartupMessages(library(sf))
+# einwohnerdata <- read.csv("data/EWR201812E_Matrix.csv", sep = ";")
+# fallzahlMap <- function(Krankheitsvar = "Campylobacter"){
+#    ggplot(planungsraeume %>%  filter(Krankheit == Krankheitsvar)) +
+#     geom_sf(aes(fill = anzahl)) +
+#     theme_void() + 
+#     facet_grid(.~Krankheit) + 
+#     scale_fill_continuous(name = "", low = "#ffcccc", high = "#ff0000") +
+#     theme(plot.title = element_text(size = 14, face = "bold"))
+# }
+
+
+```
 
 
 # Nach Facharztrichtungen {.tabset}
@@ -335,7 +353,7 @@ kable(data)
 ```
 
 
-# Fachärzt/innen in Behörden, Körperschaften o.ä. {.tabset}
+# Behörden, Körperschaften o.ä. {.tabset}
 Bei den Ärztekammern registrierte in Behörden, Körperschaften oder ähnlichen Einrichtungen tätigen Ärztinnen und Ärzte nach Facharztrichtungen in Deutschland zwischen 1998 und 2018
 
 ## Tabelle
@@ -524,8 +542,8 @@ grid.arrange(g1, g2, g3, g4)
 ```
 
 
-# Fachärzte und Altersverteilung
-## Alter der tätigen Fachärzte nach Facharzt im Jahr 1998 und Jahr 2018
+# Altersverteilung
+Alter der tätigen Fachärzte nach Facharztgebiet im Jahr 1998 und Jahr 2018
 ```{r}
 data <- read_gbe_files(file = "191022_Geschlecht_Alter_Facharzt_nurTaetige.csv", variables = c("Geschlecht", "Alter", "Facharzt")) %>% 
   filter(Alter != "Alle Altersgruppen") %>% 
