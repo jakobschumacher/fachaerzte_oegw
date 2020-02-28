@@ -141,17 +141,20 @@ data <- data %>%
   mutate(origin = n - cum_change) %>% 
   mutate(cum_perc_change = (100 * (n - origin)) / origin) 
 
-ggplot(data, aes(Jahr, cum_perc_change, group = aerztliche_taetigkeit)) +
-  geom_line(aes(linetype = aerztliche_taetigkeit), size = 1.5) +
+g1 <- ggplot(data, aes(Jahr, cum_perc_change, group = aerztliche_taetigkeit)) +
+  geom_line(color='steelblue',aes(linetype = aerztliche_taetigkeit), size = 1.5) +
   theme_bw(base_size = 14) +
   ylab("Kummulierte prozentuale Änderung") +
-  theme(axis.text.x  = element_text(angle = 90, vjust = 0),
-        legend.position = "bottom") +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
   labs(linetype = "", color = "Ärztliche Tätigkeit") +
   scale_linetype_manual(values = c("dotdash", "dotted", "solid"), breaks = c("Gesamt", "In Behörden/Körperschaften u. a.", "Öffentliches Gesundheitswesen"), labels = c("Alle Fachärzt/innen", "Fachärzte/innen in Körperschaften", "Fachärzte/innen im ÖGW")) +
-  theme(legend.position = "right", legend.key.width = unit(1.8,"cm")) +
+  theme(legend.position = "bottom", legend.key.width = unit(1.8,"cm")) +
   guides(linetype = guide_legend(override.aes = list(size = 2))) 
       
+
+ggsave(g1, filename = paste("graphs/", Sys.Date(),"_Abbildung_1"), device = "jpg", width = 28, height = 14, units = "cm", dpi = 300)
+
+g1
 ```
 
 Kummulierte prozentuale Änderung der Anzahl der bei der Ärztekammer registrierten tätigen Fachärztinnen und Fachärzten in Deutschland von 1998 bis 2018
@@ -211,11 +214,13 @@ data$Region <- factor(data$Region, levels = RegionOrder)
 g1 <- ggplot(as.data.frame(data) , aes(x = Jahr, 
                                        y = n, 
                                        group = 1)) +  
-  geom_line(size = 1.1) +
+  geom_line(color='steelblue',size = 1.1) +
   facet_wrap(. ~ Region, scales = "free") +
   theme_bw(base_size = 14) +
   ylab("Tätige Fachärzte ÖGW") +
   theme(axis.text.x  = element_text(angle = 90, vjust = 0)) 
+
+ggsave(g1, filename = paste("graphs/", Sys.Date(),"_Abbildung_2"), device = "jpg", width = 28, height = 28, units = "cm", dpi = 300)
 
 g1
 ```
@@ -277,7 +282,7 @@ g1 <- ggplot(as.data.frame(data %>%
                            )) ) , aes(x = Jahr, 
                                  y = n, 
                                  group = 1)) +  
-  geom_line(size = 1.2) +
+  geom_line(color='steelblue',size = 1.2) +
   facet_wrap(. ~ Facharzt) +
   theme_bw(base_size = 14) +
   ylab("") +
@@ -293,7 +298,7 @@ g2 <- ggplot(as.data.frame(data %>%
                            )) ) , aes(x = Jahr, 
                                  y = n, 
                                  group = 1)) +  
-  geom_line(size = 1.2) +
+  geom_line(color='steelblue', size = 1.2) +
   facet_wrap(. ~ Facharzt) +
   theme_bw(base_size = 14) +
   ylab(" ") +
@@ -301,9 +306,13 @@ g2 <- ggplot(as.data.frame(data %>%
   scale_y_continuous(limits = c(0,1500))
 
 
-grid.arrange(g1,
+g3 <- grid.arrange(g1,
              g2, 
              left = "Anzahl Fachärzt/innen")
+
+ggsave(g3, filename = paste("graphs/", Sys.Date(),"_Abbildung_3"), device = "jpg", width = 28, height = 28, units = "cm", dpi = 300)
+
+g3
 
 ```
 
@@ -393,13 +402,19 @@ data <- data %>%
   mutate(count = sum(n, na.rm = TRUE)) %>% 
   mutate(percent = (n * 100) / count)
 
-ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
+g1 <- ggplot(data, aes(x = Jahr, y = percent, fill = Alter)) +
   geom_col(position = position_stack(reverse = TRUE)) +
-  theme_bw() +
+  theme_bw(base_size = 14) +
   ylab("Prozentsatz der Altersgruppe von der \n Gesamtanzahl der Fachärzte ÖGW") +
   #scale_y_discrete(expand = c(0,0)) +
-  theme(axis.text.x  = element_text(angle = 90, vjust = 0)) +
+  theme(axis.text.x  = element_text(angle = 90, vjust = 0),
+        legend.position = "bottom") +
   scale_fill_brewer(palette = "Blues")
+
+
+ggsave(g1, filename = paste("graphs/", Sys.Date(),"_Abbildung_4"), device = "jpg", width = 28, height = 28, units = "cm", dpi = 300)
+
+g1
 
 ```
 
@@ -480,7 +495,7 @@ g1 <- ggplot(data_gesamt %>%
   geom_bar(stat = "identity") + 
   scale_y_continuous(limits = c(-60000, 60000)) +
   coord_flip() + 
-  theme_bw() +
+  theme_bw(base_size = 14) +
   xlab("Alter aller tätigen Fachärzte/innen") +
   ggtitle("1998") +
   theme(legend.position = "none") +
@@ -496,7 +511,7 @@ g2 <- ggplot(data_gesamt %>%
   geom_bar(stat = "identity") + 
   scale_y_continuous(limits = c(-60000, 60000)) +
   coord_flip() + 
-  theme_bw() +
+  theme_bw(base_size = 14) +
   xlab("") +
   ggtitle("2018") +
   theme(legend.position = "none") +
@@ -513,7 +528,7 @@ g3 <- ggplot(data %>%
   geom_bar(stat = "identity") + 
   scale_y_continuous(limits = c(-320, 320)) +
   coord_flip() + 
-  theme_bw() +
+  theme_bw(base_size = 14) +
   xlab("Alter Fachärzte ÖGW") +
   ggtitle("1998") +
   theme(legend.position = "none") +
@@ -530,7 +545,7 @@ g4 <- ggplot(data %>%
   geom_bar(stat = "identity") + 
   scale_y_continuous(limits = c(-320, 320)) +
   coord_flip() + 
-  theme_bw() +
+  theme_bw(base_size = 14) +
   xlab("") +
   ggtitle("2018") +
   theme(legend.position = "none") +
@@ -538,7 +553,13 @@ g4 <- ggplot(data %>%
   scale_fill_brewer(palette = "Blues")
 
 
-grid.arrange(g1, g2, g3, g4)
+g5 <- grid.arrange(g1, g2, g3, g4)
+
+
+ggsave(g5, filename = paste("graphs/", Sys.Date(),"_Abbildung_5"), device = "jpg", width = 28, height = 28, units = "cm", dpi = 300)
+
+g5
+
 ```
 
 
@@ -564,8 +585,8 @@ df_facharzt <- data %>%
   mutate(gesammeltesAlter = n*Alter) %>% 
   group_by(Facharzt, Jahr) %>% 
   summarise(MittleresAlter = round(sum(gesammeltesAlter)/sum(n),1)) %>% 
-  spread(key="Jahr", value = "MittleresAlter") %>% 
-  mutate(Differenz = Jahr2018-Jahr1998) %>% 
+  spread(key = "Jahr", value = "MittleresAlter") %>% 
+  mutate(Differenz = Jahr2018 - Jahr1998) %>% 
   ungroup() %>% 
   mutate(Facharzt = as.character(Facharzt))
 
